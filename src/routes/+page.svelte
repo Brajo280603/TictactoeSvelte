@@ -26,6 +26,8 @@
 
 	let gameSteps = 0;
 
+	let winningindexNumber = null;
+
 	for(let i = 0; i < 9; i++){
 		valueArray[i] = gridArray[i] == 0 ? "" : gridArray[i] == 1 ? "X" : "O";
 	}
@@ -59,8 +61,9 @@
 	}
 
 	function winnerCalc(){
-		let xInputIndexs = []
-		let oInputIndexs = []
+		let xInputIndexs = [];
+		let oInputIndexs = [];
+		winningindexNumber = null;
 
 		for(let i=0;i<9;i++){
 			if(valueArray[i] == "X"){
@@ -71,10 +74,62 @@
 			}
 		}
 
+		console.log(xInputIndexs)
+		console.log(oInputIndexs)
 
+		if(findWinner(xInputIndexs) == true){
+			disableEveryGridButton();
+			onlyShowWinningSquares();
+
+			setTimeout(()=>{
+				gameOver("X")
+			},1500)
+		}else if(findWinner(oInputIndexs) == true){
+			disableEveryGridButton();
+			onlyShowWinningSquares();
+
+			setTimeout(()=>{
+				gameOver("O")
+			},1500)
+		}else {
+			// gameOver(null)
+		}
+		
+		
 		
 	}
 
+
+	function findWinner(input_Array){
+
+		let matchCount = 0;
+
+		for(let i = 0;i<winningIndexes.length;i++){
+			// console.log(winningIndexes[i]);
+			matchCount = 0;
+			for(let j = 0;j<winningIndexes[i].length;j++){
+
+
+				for(let inp_i = 0;inp_i < input_Array.length;inp_i++){
+					if(input_Array[inp_i] == winningIndexes[i][j]){
+						matchCount++;
+					}
+				}
+			}
+
+			console.log(matchCount)
+			if(matchCount >=3){
+				winningindexNumber = i;
+				return true;
+			}
+
+			if(i == winningIndexes.length -1){
+				winningindexNumber = i;
+				return false;
+			}
+
+		}
+	}
 
 	
 
@@ -86,6 +141,9 @@
 		}
 		winner = "";
 		gameSteps = 0;
+
+		enableEveryGridButton();
+		showAllSquares();
 	}
 
 	function mainMenu(){
@@ -108,6 +166,46 @@
 
 	}
 
+	function disableEveryGridButton(){
+		let allGridButtons = document.querySelectorAll(".gridBtn");
+
+		allGridButtons.forEach(el=>{
+			el.disabled = true;
+		})
+	}
+
+	function enableEveryGridButton(){
+		let allGridButtons = document.querySelectorAll(".gridBtn");
+
+		allGridButtons.forEach(el=>{
+			el.disabled = false;
+		})
+	}
+
+	function onlyShowWinningSquares(){
+		let allGridButtons = document.querySelectorAll(".gridBtn");
+		
+		if(winningindexNumber != null){
+			for(let i = 0;i<allGridButtons.length;i++){
+				if(i != winningIndexes[winningindexNumber][0] && i != winningIndexes[winningindexNumber][1] && i != winningIndexes[winningindexNumber][2]){
+					allGridButtons[i].classList.add("hideDivs")
+				}
+			}
+		}
+	}
+
+	function showAllSquares(){
+		let allGridButtons = document.querySelectorAll(".gridBtn");
+		
+
+		if(winningindexNumber != null){
+			for(let i = 0;i<allGridButtons.length;i++){
+				if(i != winningIndexes[winningindexNumber][0] && i != winningIndexes[winningindexNumber][1] && i != winningIndexes[winningindexNumber][2]){
+					allGridButtons[i].classList.remove("hideDivs")
+				}
+			}
+		}
+	}
 
 
 
@@ -143,14 +241,36 @@
 
 	<!-- game screen -->
 	<div class=" {winner === '' && started ? '' : 'hidden'}  fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] bg-orange-500 md:w-[42vw] md:h-[42vw] w-[90vw] h-[90vw] grid grid-cols-3">
-		<button on:click={()=>{clickBox(0)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[0]}</button>
-		<button on:click={()=>{clickBox(1)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[1]}</button>
-		<button on:click={()=>{clickBox(2)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[2]}</button>
-		<button on:click={()=>{clickBox(3)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[3]}</button>
-		<button on:click={()=>{clickBox(4)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[4]}</button>
-		<button on:click={()=>{clickBox(5)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[5]}</button>
-		<button on:click={()=>{clickBox(6)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[6]}</button>
-		<button on:click={()=>{clickBox(7)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[7]}</button>
-		<button on:click={()=>{clickBox(8)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl">{valueArray[8]}</button>
+		<button on:click={()=>{clickBox(0)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[0]}</button>
+		<button on:click={()=>{clickBox(1)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[1]}</button>
+		<button on:click={()=>{clickBox(2)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[2]}</button>
+		<button on:click={()=>{clickBox(3)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[3]}</button>
+		<button on:click={()=>{clickBox(4)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[4]}</button>
+		<button on:click={()=>{clickBox(5)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[5]}</button>
+		<button on:click={()=>{clickBox(6)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[6]}</button>
+		<button on:click={()=>{clickBox(7)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[7]}</button>
+		<button on:click={()=>{clickBox(8)}} class="border-8 flex justify-center items-center md:w-[14vw] md:h-[14vw] w-[30vw] h-[30vw] text-7xl gridBtn">{valueArray[8]}</button>
 	</div>
 </div>
+
+<div class="hideDivs hidden" >
+
+</div>
+<style>
+
+	.hideDivs{
+		animation: hide 1500 ease forwards ;
+	}
+
+@keyframes hide {
+  0% {
+	opacity: 1;
+  }
+  90%{
+	opacity: 0.1;
+  }
+  100% {
+	opacity: 0;
+  }
+}
+</style>
